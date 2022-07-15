@@ -9,7 +9,7 @@ const SongSchema = new Schema({
     likes: [{type: mongoose.Types.ObjectId, ref: 'User'}],
     fileUrl: {type: String, required: true},
     coverUrl: {type: String, required: true},
-    user: { type: String, required: true, ref: 'User'},
+    user: { type: mongoose.Types.ObjectId, required: true, ref: 'User'},
     releaseDate: { type: Date, default: Date.now},
     createdOn: { type: Date, default: Date.now}
 })
