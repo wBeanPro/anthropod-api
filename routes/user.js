@@ -2,25 +2,14 @@ const router = require('express').Router();
 const auth = require('../middleware/auth.js');
 const User = require('../models/user.js');
 const helper = require('../utils/util.js');
-const multer = require('multer');
+const { UploadImage } = require('../middleware/file_middleware.js');
 
-const storage = multer.memoryStorage()
 
-const UploadImage = multer({
-    storage: storage,
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.includes('image')){
-            cb(null, true)
-        } else {
-            cb(null, false)
-        }
-    }
-})
 
 router.get('/', auth.verifyToken, function(req, res, next){
     User.findById({_id:req.userId}, function(err, user){
         if (err) return res.status(500)
-        return res.status(200).send({id: user._id, username: user.username, email: user.email})
+        return res.status(200).send({id: user._id, username: user.username, email: user.email, profile_photo:user.profile_photo || null})
     })
 })
 
