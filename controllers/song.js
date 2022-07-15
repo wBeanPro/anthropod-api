@@ -1,3 +1,5 @@
+const { default: mongoose } = require('mongoose');
+const { UploadAudio } = require('../middleware/file_middleware.js');
 const Song = require('../models/song.js');
 const { uploadFile } = require('../utils/util.js');
 
@@ -53,6 +55,29 @@ exports.update_song = async(req, res, next) => {
 }
 
 
-exports.create_song =  (req, res, next) => {
+exports.create_song =  async(req, res, next) => {
     // should create song object and saved to database.
+    const userId = req.userId;
+    const { title } = req.body;
+    const CoverUrl = req.files['cover'][0];
+    const SongFileUrl = req.files['song'][0];
+    try{
+        let publicCoverUrl = await uploadFile(CoverUrl);
+        let publicSongFileUrl = await uploadFile(SongFileUrl)
+
+        let newSong = new Song({
+            _id: new mongoose.Types.ObjectId().toHexString(),
+            title: title,
+            fileUrl: publicSongFileUrl,
+            coverUrl: publicCoverUrl,
+            user: req.userId
+        })
+
+        await newSong.save();
+        res.status(201).send({message:`${newSong.title} has been  succesfully created!`})
+    }catch(error){
+        const err = new Error(error);
+        res.status(500).send({message:err.message});
+    }
 }
+

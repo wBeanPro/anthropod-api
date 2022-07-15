@@ -26,8 +26,23 @@ const UploadAudio = multer({
 
 })
 
+const Upload_image_or_audio = multer({
+    storage:storage,
+    fileFilter: (req, file, cb) => {
+        if (
+            file.mimetype.includes('audio') ||
+            file.mimetype.includes('image')
+        ) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    }
+})
+
 
 module.exports = {
     UploadImage,
-    UploadAudio
+    UploadAudio,
+    Upload_image_or_audio
 }
