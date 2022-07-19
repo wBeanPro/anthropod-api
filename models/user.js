@@ -8,6 +8,8 @@ const UserSchema = new Schema({
     username: { type: String, required:true, unique: true},
     email: {type: String, unique: true},
     password: {type: String, required: true},
+    firstname: { type: String, required: true},
+    lastname: { type: String, required: true },
     profile_photo: {type: String},
     songs:[{type: mongoose.Types.ObjectId, ref:'Songs'}],
     followers: [{type: mongoose.Types.ObjectId, ref: 'Users'}],
