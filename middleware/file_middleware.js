@@ -11,6 +11,9 @@ const UploadImage = multer({
         } else {
             cb(null, false)
         }
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + file.originalname)
     }
 })
 
@@ -22,6 +25,9 @@ const UploadAudio = multer({
         } else {
             cb(null, false);
         }
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + file.originalname);
     }
 
 })
@@ -37,6 +43,9 @@ const Upload_image_or_audio = multer({
         } else {
             cb(null, false);
         }
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + file.originalname);
     }
 })
 
