@@ -7,9 +7,11 @@ const {  ServerApiVersion, MongoClient } = require('mongodb');
 const cors =  require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const routes = require('./routes/index.js')
+const routes = require('./routes/index.js');
+const { read } = require('fs');
 const app = express();
 const uri = `mongodb+srv://anthropoduser:${process.env.MONGO_PASSWORD}@cluster0.turudph.mongodb.net/anthropod?retryWrites=true&w=majority`
+
 
 //mongodb database connection
 mongoose.connect(uri,{ useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1})
@@ -22,16 +24,23 @@ morgan.token('host',(req,res) =>{
 
 //middleware
 
+// cors options
+
+const corsOptions = {
+    origin: 'http://localhost:4200',
+    optionsSuccessStatus: 200
+}
+
 app.use(morgan(':method :host :status :res[content-type] - :response-time ms'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(function(req, res, next){
-    res.header(
-        'Access-Control-Allow-Headers',
-        'x-access-token, Origin, Content-Type, Accept'
-    )
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-methods', 'GET, POST, PUT, DELETE')
+    res.setHeader('Access-Control-Allow-Credentials', true)
+    
     next();
 })
 

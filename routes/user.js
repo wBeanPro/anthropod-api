@@ -6,7 +6,7 @@ const { UploadImage } = require('../middleware/file_middleware.js');
 
 
 
-router.get('/', auth.verifyToken, function(req, res, next){
+router.get('/:userId', auth.verifyToken, function(req, res, next){
     User.findById({_id:req.userId}, function(err, user){
         if (err) return res.status(500)
         return res.status(200).send({id: user._id, username: user.username, email: user.email, profile_photo:user.profile_photo || null})
