@@ -49,8 +49,9 @@ exports.UPDATE_IMAGE = async (req, res, next) => {
             }, (err, updatedCover) => {
                 
                 if (err) return res.status(400).send({message: `could not update resource`})
-
-                res.status(200).send({cover: updatedCover})
+                if (updatedCover) {
+                    res.status(200).send({cover: updatedCover})
+                }
             })
     
     
@@ -66,7 +67,9 @@ exports.ADD_SONG_TO_PLAYLIST = (req, res, next) => {
          { new: true, upsert: true},
          (err, updatedPlaylist) => {
             if (err) res.status(400).send({message: err.message})
-            res.status(200).send({playlist: updatedPlaylist})
+            if (updatedPlaylist) {
+                res.status(200).send({playlist: updatedPlaylist})
+            }
          }
         );
 }
@@ -80,7 +83,9 @@ exports.REMOVE_SONG_FROM_PLAYLIST = (req, res, next) => {
         {new: true, upsert:true},
         (err, updatedPlaylist) => {
             if (err) res.status(400).send({message:'could not find resource for deletion'})
-            res.status(200).send({message:'item has been removed!'})
+            if (updatedPlaylist){
+                res.status(200).send({message:'item has been removed!'})
+            }
         }
     )
 } 
@@ -88,7 +93,7 @@ exports.REMOVE_SONG_FROM_PLAYLIST = (req, res, next) => {
 exports.UPDATE_PLAYLIST = async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
-    const cover = req.files;
+    const cover = req.file;
     let updatedCover = await uploadFile(cover)
     Playlist.findByIdAndUpdate(
         {_id: id},
@@ -96,7 +101,9 @@ exports.UPDATE_PLAYLIST = async (req, res, next) => {
         {new:true, upsert:true},
         (err, updatedPlaylist) => {
             if (err) res.status(500).send({message: err.message})
-            res.status(200).send({playlist: updatedPlaylist});
+            if (updatedPlaylist){
+                res.status(200).send({playlist: updatedPlaylist});
+            }
         }
     )
 }
@@ -105,7 +112,22 @@ exports.DELETE_PLAYLIST = (req, res, next) => {
     const { id } = req.params;
 
     Playlist.findByIdAndDelete({_id:id}, (err, deletedItem) => {
-        if (err) res.status(404).send({message: 'playlist no longer exists!'})
-        res.status(200).send({message: `${deletedItem.name} has been deleted!`})
+        if (err)  return res.status(404).send({message: 'playlist no longer exists!'})
+        if (deletedItem){
+            res.status(200).send({message: `${deletedItem.name} has been deleted!`})
+        }
     })
+   return  res.status(500).send({message: 'something went wrong!'})
 } 
+
+exports.GET_PLAYLIST_BY_USER = (req, res, next) => {
+    const { userId } = req.params;
+    
+    Playlist.findOne({user:userId}, (err, playlist) => {
+        if (err) res.status(404).send({message: 'playlist not found!'})
+       return  res.status(200).send({error:false, playlist:playlist});
+    })
+
+   return res.status(500).send({message: 'something went wrong!'})
+
+}
