@@ -112,22 +112,26 @@ exports.DELETE_PLAYLIST = (req, res, next) => {
     const { id } = req.params;
 
     Playlist.findByIdAndDelete({_id:id}, (err, deletedItem) => {
-        if (err)  return res.status(404).send({message: 'playlist no longer exists!'})
-        if (deletedItem){
+        if (err)   res.status(404).send({message: 'playlist no longer exists!'})
+         else if (deletedItem){
             res.status(200).send({message: `${deletedItem.name} has been deleted!`})
+        } else{
+            return  res.status(500).send({message: 'something went wrong!'})
         }
     })
-   return  res.status(500).send({message: 'something went wrong!'})
 } 
 
 exports.GET_PLAYLIST_BY_USER = (req, res, next) => {
     const { userId } = req.params;
     
-    Playlist.findOne({user:userId}, (err, playlist) => {
+    Playlist.find({user:userId}, (err, playlist) => {
         if (err) res.status(404).send({message: 'playlist not found!'})
-       return  res.status(200).send({error:false, playlist:playlist});
+         else if(playlist) {
+            res.status(200).send({playlist:playlist})
+        } else {
+            return res.status(500).send({message: 'something went wrong!'})
+        }
     })
 
-   return res.status(500).send({message: 'something went wrong!'})
 
 }

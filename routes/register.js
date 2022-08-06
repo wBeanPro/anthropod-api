@@ -8,20 +8,25 @@ router.post('/', UploadImage.single('profileImage') ,async function(req, res){
     const { username, password, email, firstname,  lastname } = req.body;
     const id = new mongoose.Types.ObjectId().toHexString();
     const profileImage = req.file;
-    const user_profile_image = await uploadFile(profileImage)
+    let profile_image_url = null;
+    
+    User.findOne({username:username}, async function(err, user){
+        if (err) return res.status(401).send({isSuccess:false, message: err.message});
+        
+        if (user)  return res.status(401).send({isSuccess:false ,message: 'Username taken!'})
+        if (profileImage){
+            profile_image_url = await uploadFile(profileImage)
+        }
 
-    User.findOne({username:username}, function(err, user){
-        if (err) return res.status(401).send({message: err.message});
-
-        if (user)  return res.status(401).send({message: 'Username taken!'})
-
-        const newUser = new User({_id:id, username, email, password, firstname, lastname,  profile_photo: user_profile_image || ''})
+        const newUser = new User({_id:id, username, email, password, firstname, lastname,  profile_photo: profile_image_url || ''})
 
         newUser.save(function(err, user){
             if (err) return res.status(500).send({messsage:err.message});
-            res.status(200).send({message: `${user.id} has successfully been created!`})
+            res.status(200).send({isSuccess:true, message: `${user.id} has successfully been created!`})
         })
     })
+
+   
 })
 
 module.exports = router;

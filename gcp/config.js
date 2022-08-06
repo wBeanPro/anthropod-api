@@ -2,7 +2,7 @@ const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 const fs = require('fs');
 
-const serviceKey = path.join(__dirname, '../cryptic-tower-356203-4d64f8c8923f.json'); 
+const serviceKey = path.join(__dirname, '../earnest-beacon-358103-c65ec311e6e3.json'); 
 
 const storage = new Storage({
     keyFilename: serviceKey,

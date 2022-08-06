@@ -9,7 +9,7 @@ router.post('/', function(req, res){
 
     User.findOne({username:username},function(err, user){
         if (err) return res.status(500).send({message: err.message})
-        if (!user) return res.status(404).send({message: 'User not found!'})
+        // if (!user) return res.status(404).send({message: 'User not found!'})
 
         if (user && user.comparePassword(password)){
             const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {
