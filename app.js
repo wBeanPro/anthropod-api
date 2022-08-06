@@ -25,15 +25,21 @@ morgan.token('host',(req,res) =>{
 //middleware
 
 // cors options
-
+const allowedOrigins  = ['http://localhost:4200', 'https://anthropod-staging.herokuapp.com']
 const corsOptions = {
-    origin: 'http://localhost:4200',
+    origin: (origin, cb) => {
+        if(!origin || allowedOrigins.indexOf(origin) !== -1){
+            cb(null, true)
+        } else [
+            cb(new Error('not allowed by cors!'))
+        ]
+    },
     optionsSuccessStatus: 200
 }
 
 app.use(morgan(':method :host :status :res[content-type] - :response-time ms'));
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json({limit: '10mb'}));
 app.use(cors(corsOptions));
 
 app.use(function(req, res, next){

@@ -18,6 +18,6 @@ const uploadFile = (file) => new Promise ((resolve, reject) => {
     })
     .end(buffer)
 })
-
+// TODO: add visual banner on frontend on error.
 
 module.exports = {uploadFile}
