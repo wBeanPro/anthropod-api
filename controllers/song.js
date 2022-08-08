@@ -6,8 +6,9 @@ const { uploadFile } = require('../utils/util.js');
 exports.get_all_songs = (req, res, next) => {
     try {
         Song.find({}).
-        populate('user')
-        .exec((err, songs) => {
+        populate('user').
+        populate('genre').
+        exec((err, songs) => {
             if(err || !songs) res.status(403).send({message: err.message})
             res.status(200).send({songs:songs})
         })
@@ -22,6 +23,7 @@ exports.get_song_by_id = (req, res, next) => {
     try {
         Song.findById({_id:id}).
         populate('user').
+        populate('genre').
         exec((err, song) => {
             if (!song) res.status(403).send({message: ' Song does not exist!'})
             res.status(200).send({song:song})
@@ -58,18 +60,23 @@ exports.update_song = async(req, res, next) => {
 exports.create_song =  async(req, res, next) => {
     // should create song object and saved to database.
     const userId = req.userId;
-    const { title } = req.body;
     const CoverUrl = req.files['cover'][0];
     const SongFileUrl = req.files['song'][0];
+    
+    if (!(Array.isArray(req.body.genre))){
+        req.body.genre = [req.body.genre]
+    }
+
     try{
         let publicCoverUrl = await uploadFile(CoverUrl);
         let publicSongFileUrl = await uploadFile(SongFileUrl)
 
         let newSong = new Song({
             _id: new mongoose.Types.ObjectId().toHexString(),
-            title: title,
+            title: req.body.title,
             fileUrl: publicSongFileUrl,
             coverUrl: publicCoverUrl,
+            genre: req.body.genre,
             user: req.userId
         })
 
