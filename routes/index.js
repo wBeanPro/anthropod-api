@@ -13,4 +13,5 @@ router.use('/profile', userRoute);
 router.use('/song', songRoute);
 router.use('/playlist', playlistRoute);
 router.use('/genre', genreRoute);
+router.use('/user', userRoute);
 module.exports = router;

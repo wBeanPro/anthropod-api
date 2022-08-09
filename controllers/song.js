@@ -9,12 +9,12 @@ exports.get_all_songs = (req, res, next) => {
         populate('user').
         populate('genre').
         exec((err, songs) => {
-            if(err || !songs) res.status(403).send({message: err.message})
-            res.status(200).send({songs:songs})
+            if(err || !songs) res.status(403).send({isSuccess: false,message: err.message})
+            res.status(200).send({isSuccess: true,songs:songs})
         })
     } catch (error) {
         const err = new Error(error);
-        res.status(500).send({message: err.message})
+        res.status(500).send({isSuccess:false,message: err.message})
     }
 }
 
@@ -25,12 +25,12 @@ exports.get_song_by_id = (req, res, next) => {
         populate('user').
         populate('genre').
         exec((err, song) => {
-            if (!song) res.status(403).send({message: ' Song does not exist!'})
-            res.status(200).send({song:song})
+            if (!song) res.status(403).send({isSuccess: false,message: ' Song does not exist!'})
+            res.status(200).send({isSuccess: true,song:song})
         })
     } catch (error) {
         const err = new Error(error);
-        res.status(500).send({message: err.message});
+        res.status(500).send({isSuccess: false,message: err.message});
     }
 }
 
@@ -47,14 +47,16 @@ exports.update_song = async(req, res, next) => {
             upsert:true
         },
         (err, song) => {
-            if (song)  res.status(200).send({updated_song: song})
+            if (song)  res.status(200).send({isSuccess: true,updated_song: song})
         }
         )
     } catch(error) {
         const err = new Error(error);
-        res.status(500).send({message:err.message})
+        res.status(500).send({isSuccess: false,message:err.message})
     }
 }
+
+
 
 
 exports.create_song =  async(req, res, next) => {
@@ -81,10 +83,10 @@ exports.create_song =  async(req, res, next) => {
         })
 
         await newSong.save();
-        res.status(201).send({message:`${newSong.title} has been  succesfully created!`})
+        res.status(201).send({isSuccess: true,message:`${newSong.title} has been  succesfully created!`})
     }catch(error){
         const err = new Error(error);
-        res.status(500).send({message:err.message});
+        res.status(500).send({isSuccess: false,message:err.message});
     }
 }
 // Todo add frontend alert on error/ success.
