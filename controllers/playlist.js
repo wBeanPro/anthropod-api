@@ -31,8 +31,12 @@ exports.GET_PLAYLIST_BY_ID = (req, res, next) => {
     .populate('user')
     .populate('songs')
     .exec((err, playlist) => {
-        if (err) res.status(404).send({message: 'playlist does not exist!'})
-        res.status(200).send({playlist:playlist})
+        if (err) res.status(404).send({isSuccess:false,message:err.message})
+        else if(playlist){
+            res.status(200).send({isSuccess: true,playlist:playlist})
+        } else{
+            res.status(500).send({isSucces:false, message:'something went wrong!'})
+        }
     })
 }
 
@@ -48,9 +52,9 @@ exports.UPDATE_IMAGE = async (req, res, next) => {
                 upsert:true
             }, (err, updatedCover) => {
                 
-                if (err) return res.status(400).send({message: `could not update resource`})
+                if (err) return res.status(400).send({isSucces:false,message: `could not update resource`})
                 if (updatedCover) {
-                    res.status(200).send({cover: updatedCover})
+                    res.status(200).send({isSuccess:true,cover: updatedCover})
                 }
             })
     
@@ -66,9 +70,9 @@ exports.ADD_SONG_TO_PLAYLIST = (req, res, next) => {
         {$push: {songs: song}},
          { new: true, upsert: true},
          (err, updatedPlaylist) => {
-            if (err) res.status(400).send({message: err.message})
+            if (err) res.status(400).send({isSuccess:false ,message: err.message})
             if (updatedPlaylist) {
-                res.status(200).send({playlist: updatedPlaylist})
+                res.status(200).send({isSuccess:true,playlist: updatedPlaylist})
             }
          }
         );
@@ -100,9 +104,9 @@ exports.UPDATE_PLAYLIST = async (req, res, next) => {
         {name: name, image: updatedCover},
         {new:true, upsert:true},
         (err, updatedPlaylist) => {
-            if (err) res.status(500).send({message: err.message})
+            if (err) res.status(500).send({isSucces:false,message: err.message})
             if (updatedPlaylist){
-                res.status(200).send({playlist: updatedPlaylist});
+                res.status(200).send({isSucces:true,playlist: updatedPlaylist});
             }
         }
     )
@@ -114,9 +118,9 @@ exports.DELETE_PLAYLIST = (req, res, next) => {
     Playlist.findByIdAndDelete({_id:id}, (err, deletedItem) => {
         if (err)   res.status(404).send({message: 'playlist no longer exists!'})
          else if (deletedItem){
-            res.status(200).send({message: `${deletedItem.name} has been deleted!`})
+            res.status(200).send({isSuccess: true,message: `${deletedItem.name} has been deleted!`})
         } else{
-            return  res.status(500).send({message: 'something went wrong!'})
+            return  res.status(500).send({isSucces:false,message: 'something went wrong!'})
         }
     })
 } 
@@ -125,11 +129,11 @@ exports.GET_PLAYLIST_BY_USER = (req, res, next) => {
     const { userId } = req.params;
     
     Playlist.find({user:userId}, (err, playlist) => {
-        if (err) res.status(404).send({message: 'playlist not found!'})
+        if (err) res.status(404).send({isSucces:false,message: 'playlist not found!'})
          else if(playlist) {
-            res.status(200).send({playlist:playlist})
+            res.status(200).send({isSuccess:true,playlist:playlist})
         } else {
-            return res.status(500).send({message: 'something went wrong!'})
+            return res.status(500).send({isSuccess:false ,message: 'something went wrong!'})
         }
     })
 
