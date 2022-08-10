@@ -29,7 +29,12 @@ exports.GET_PLAYLIST_BY_ID = (req, res, next) => {
 
     Playlist.findById({_id:id})
     .populate('user')
-    .populate('songs')
+    .populate({
+        path: 'songs',
+        populate: {
+            path: 'user'
+        }
+    })
     .exec((err, playlist) => {
         if (err) res.status(404).send({isSuccess:false,message:err.message})
         else if(playlist){
