@@ -14,9 +14,9 @@ exports.CREATE_PLAYLIST = (req, res, next) => {
 
     try {
         playlist.save((err, doc) => {
-            if (err) return res.staus(400).send({message:err.message})
+            if (err) return res.staus(400).send({isSuccess:false,message:err.message})
 
-            res.status(200).send({ message:`${doc.name} has create successfully!`})
+            res.status(200).send({isSuccess:true,message:`${doc.name} has create successfully!`})
         })
     } catch (error) {
         const err = new Error(error)
@@ -40,7 +40,7 @@ exports.GET_PLAYLIST_BY_ID = (req, res, next) => {
         else if(playlist){
             res.status(200).send({isSuccess: true,playlist:playlist})
         } else{
-            res.status(500).send({isSucces:false, message:'something went wrong!'})
+            res.status(500).send({isSuccess:false, message:'something went wrong!'})
         }
     })
 }
@@ -57,7 +57,7 @@ exports.UPDATE_IMAGE = async (req, res, next) => {
                 upsert:true
             }, (err, updatedCover) => {
                 
-                if (err) return res.status(400).send({isSucces:false,message: `could not update resource`})
+                if (err) return res.status(400).send({isSuccess:false,message: `could not update resource`})
                 if (updatedCover) {
                     res.status(200).send({isSuccess:true,cover: updatedCover})
                 }
@@ -83,20 +83,23 @@ exports.ADD_SONG_TO_PLAYLIST = (req, res, next) => {
         );
 }
 
-exports.REMOVE_SONG_FROM_PLAYLIST = (req, res, next) => {
+exports.REMOVE_SONG_FROM_PLAYLIST = async(req, res, next) => {
     const { id } =  req.params;
     const { song } = req.body;
-    Playlist.findByIdAndUpdate(
-        {_id:id},
-        {$pull: {songs: song}},
-        {new: true, upsert:true},
-        (err, updatedPlaylist) => {
-            if (err) res.status(400).send({isSuccess:false,message:'could not find resource for deletion'})
-            if (updatedPlaylist){
-                res.status(200).send({isSuccess:true,message:'item has been removed!'})
-            }
-        }
-    )
+
+        // Playlist.findOneAndUpdate({_id:id}, {$pull: {'songs': song}})
+        Playlist.updateOne(
+            {_id:id},
+            {$pull: {'songs': song}},
+            ((err, doc) => {
+                if (err) res.status(500).send({isSuccess:false, message: 'something went wrong! could not delelete song'})
+                if (doc){
+                    console.log(doc)
+                    res.status(200).send({isSuccess: true, message: 'song has been removed!'})
+                }
+            })
+        )
+    
 } 
 
 exports.UPDATE_PLAYLIST = async (req, res, next) => {
@@ -109,9 +112,9 @@ exports.UPDATE_PLAYLIST = async (req, res, next) => {
         {name: name, image: updatedCover},
         {new:true, upsert:true},
         (err, updatedPlaylist) => {
-            if (err) res.status(500).send({isSucces:false,message: err.message})
+            if (err) res.status(500).send({isSuccess:false,message: err.message})
             if (updatedPlaylist){
-                res.status(200).send({isSucces:true,playlist: updatedPlaylist});
+                res.status(200).send({isSuccess:true,playlist: updatedPlaylist});
             }
         }
     )
@@ -125,7 +128,7 @@ exports.DELETE_PLAYLIST = (req, res, next) => {
          else if (deletedItem){
             res.status(200).send({isSuccess: true,message: `${deletedItem.name} has been deleted!`})
         } else{
-            return  res.status(500).send({isSucces:false,message: 'something went wrong!'})
+            return  res.status(500).send({isSuccess:false,message: 'something went wrong!'})
         }
     })
 } 
@@ -134,7 +137,7 @@ exports.GET_PLAYLIST_BY_USER = (req, res, next) => {
     const { userId } = req.params;
     
     Playlist.find({user:userId}, (err, playlist) => {
-        if (err) res.status(404).send({isSucces:false,message: 'playlist not found!'})
+        if (err) res.status(404).send({isSuccess:false,message: 'playlist not found!'})
          else if(playlist) {
             res.status(200).send({isSuccess:true,playlist:playlist})
         } else {
