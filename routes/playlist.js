@@ -12,7 +12,7 @@ router.post('/create_playlist', Playlist_controller.CREATE_PLAYLIST);
 router.put('/:id/edit', UploadImage.single('cover') ,Playlist_controller.UPDATE_PLAYLIST);
 router.put('/:id/editImage',UploadImage.single('cover'), Playlist_controller.UPDATE_IMAGE);
 router.put('/:id/add_to_playlist', Playlist_controller.ADD_SONG_TO_PLAYLIST);
-router.put('/:id/remove/:songId',Playlist_controller.REMOVE_SONG_FROM_PLAYLIST);
+router.put('/:id/removeSong',Playlist_controller.REMOVE_SONG_FROM_PLAYLIST);
 router.delete('/:id', Playlist_controller.DELETE_PLAYLIST);
 
 module.exports = router;

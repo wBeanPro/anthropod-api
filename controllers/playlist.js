@@ -84,16 +84,16 @@ exports.ADD_SONG_TO_PLAYLIST = (req, res, next) => {
 }
 
 exports.REMOVE_SONG_FROM_PLAYLIST = (req, res, next) => {
-    const { id, songId } =  req.params;
-    console.log(songId)
+    const { id } =  req.params;
+    const { song } = req.body;
     Playlist.findByIdAndUpdate(
         {_id:id},
-        {$pull: {songs: songId}},
+        {$pull: {songs: song}},
         {new: true, upsert:true},
         (err, updatedPlaylist) => {
-            if (err) res.status(400).send({message:'could not find resource for deletion'})
+            if (err) res.status(400).send({isSuccess:false,message:'could not find resource for deletion'})
             if (updatedPlaylist){
-                res.status(200).send({message:'item has been removed!'})
+                res.status(200).send({isSuccess:true,message:'item has been removed!'})
             }
         }
     )

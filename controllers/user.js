@@ -4,8 +4,8 @@ const { UploadImage } = require('../middleware/file_middleware.js');
 
 exports.getUser = (req, res, next) => {
     User.findById({_id:req.userId}, function(err, user){
-        if (err) return res.status(500)
-        return res.status(200).send({id: user._id, username: user.username, email: user.email, profile_photo:user.profile_photo || null})
+        if (err) return res.status(500).send({isSuccess:false, message: 'Could not get user!'})
+        return res.status(200).send({isSuccess: true,id: user._id, username: user.username, email: user.email, profile_photo:user.profile_photo || null})
     })
 }
 
@@ -14,15 +14,15 @@ exports.updateUser = async (req, res, next) => {
     try {
         let profile_image_url =  await helper.uploadFile(file);
         User.findByIdAndUpdate(req.params.id, {profile_photo:profile_image_url},{upsert:true},(err, user) =>{
-            if (err) res.status(401).send({message: err.message})
+            if (err) res.status(401).send({isSucces: false,message: err.message})
 
-            if(!user) res.status(403).send({message: 'User not found!'})
+            if(!user) res.status(403).send({isSuccess: true,message: 'User not found!'})
 
-            res.status(200).send({profile_photo: user.profile_photo || null})
+            res.status(200).send({isSuccess: true,profile_photo: user.profile_photo || null})
 
         })
     } catch (error) {
-        res.status(500).send({message: error.message})
+        res.status(500).send({isSuccess:false,message: error.message})
         console.log(error)
     }
 }
