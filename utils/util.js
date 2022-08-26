@@ -6,15 +6,16 @@ const uploadFile = (file) => new Promise ((resolve, reject) => {
 
     const blob = bucket.file(originalname.replace(/ /g, '_'));
     const blobStream = blob.createWriteStream({
-        resumable: false
+        resumable: false,
     })
    .on('finish', () => {
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-        
         resolve(publicUrl);
     })
-    .on('error', () => {
-        reject(`Unable to upload file, something went wrong!`)
+    .on('error', (err) => {
+        console.log(err.message);
+        reject(err);
+        // reject(`Unable to upload file, something went wrong!`)
     })
     .end(buffer)
 })

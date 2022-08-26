@@ -11,6 +11,7 @@ const routes = require('./routes/index.js');
 const { read } = require('fs');
 const app = express();
 const uri = `mongodb+srv://anthropoduser:${process.env.MONGO_PASSWORD}@cluster0.turudph.mongodb.net/anthropod?retryWrites=true&w=majority`
+const gcp = require('./gcp/config.js');
 
 
 //mongodb database connection
@@ -22,6 +23,7 @@ morgan.token('host',(req,res) =>{
 	return req.hostname;
 })
 
+gcp.getBuckets().then((x) => console.log(x))
 //middleware
 
 // cors options
