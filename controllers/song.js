@@ -36,8 +36,9 @@ exports.get_song_by_id = (req, res, next) => {
 
 exports.update_song = async(req, res, next) => {
     const { id } = req.params
+    const song = req.file;
     try{
-        const fileUrl = await uploadFile(req.file);
+        const fileUrl = await uploadFile(song);
         Song.findByIdAndUpdate(id, {
             title: req.body.title,
             fileUrl: fileUrl

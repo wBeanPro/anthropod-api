@@ -6,6 +6,7 @@ const userRoute = require('./user.js');
 const songRoute = require('./song.js');
 const playlistRoute = require('./playlist');
 const genreRoute = require('./genre');
+const videoRoute = require('./video');
 
 router.use('/register', registerRoute);
 router.use('/login', loginRoute);
@@ -14,4 +15,5 @@ router.use('/song', songRoute);
 router.use('/playlist', playlistRoute);
 router.use('/genre', genreRoute);
 router.use('/user', userRoute);
+router.use('/video', videoRoute);
 module.exports = router;

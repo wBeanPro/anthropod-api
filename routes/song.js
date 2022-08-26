@@ -7,5 +7,5 @@ const { verifyToken } = require('../middleware/auth.js');
 router.get('/', songController.get_all_songs);
 router.get('/:id',songController.get_song_by_id)
 router.post('/' ,[verifyToken, Upload_image_or_audio.fields([{name:'cover', maxCount: 1}, {name:'song', maxCount:1}])], songController.create_song)
-router.put('/:id/edit_song', songController.update_song);
+router.put('/:id/edit_song',[verifyToken, Upload_image_or_audio.single('song')], songController.update_song);
 module.exports = router;
