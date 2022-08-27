@@ -72,6 +72,22 @@ exports.UPDATE_VIDEO = async(req, res, next) => {
 
 }
 
+exports.GET_VIDEO_BY_ID = (req, res, next) => {
+    const { id } =  req.params;
+    Video.findById({_id:id})
+    .populate('user')
+    .exec((err, video) => {
+        if (err) {
+            let error = new Error(err);
+            return res.status(500).send({isSuccess:false, message: error.message})
+        } else if(!video) {
+            return res.status(404).send({isSuccess:false, message:'resource does not exist'})
+        } else{
+            res.status(200).send({isSuccess:true, video: video})
+        }
+    })
+}
+
 
 exports.DELETE_VIDEO = (req, res, next) => {
     const { id } = req.params;
