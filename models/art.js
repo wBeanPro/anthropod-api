@@ -10,3 +10,6 @@ const ArtSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User'},
     createdOn: { type: Date, default: Date.now()}
 })
+
+
+module.exports = mongoose.model('Art', ArtSchema);

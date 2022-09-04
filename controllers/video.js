@@ -20,7 +20,6 @@ exports.CREATE_VIDEO = async(req, res, next) => {
     const thumbnail = req.files['thumbnail'][0];
     const {title} =  req.body;
     try {
-        console.log(title)
         let videoUrl = await uploadFile(video);
         let thumbnailUrl =  await uploadFile(thumbnail);
         console.log(videoUrl);
