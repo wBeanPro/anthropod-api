@@ -57,6 +57,24 @@ exports.update_song = async(req, res, next) => {
     }
 }
 
+exports.get_songs_by_user_id = (req, res, next) => {
+    const {id} = req.params;
+    
+    try {
+        Song.find({}).
+        populate('user').
+        populate('genre').
+        where('user').equals(id)
+        .exec((err, songs) => {
+            if (!songs) return res.status(403).send({isSuccess:false, message: 'Resource does not exist!'})
+            else if(songs) return res.status(200).send({isSuccess:true, songs: songs})
+        })
+    } catch (error) {
+        const err = new Error(error);
+        return res.status(500).send({isSuccess:false, message: err.message})
+    }
+
+}
 
 
 
@@ -90,4 +108,4 @@ exports.create_song =  async(req, res, next) => {
         res.status(500).send({isSuccess: false,message:err.message});
     }
 }
-// Todo add frontend alert on error/ success.
+
