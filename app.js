@@ -27,7 +27,7 @@ gcp.getBuckets().then((x) => console.log(x))
 //middleware
 
 // cors options
-const allowedOrigins  = ['http://localhost:4200', 'https://anthropod-staging.herokuapp.com']
+const allowedOrigins  = ['http://localhost:4200', 'https://anthropod-staging.herokuapp.com','https://anthropod-r7lsnsohxq-uc.a.run.app']
 const corsOptions = {
     origin: (origin, cb) => {
         if(!origin || allowedOrigins.indexOf(origin) !== -1){
