@@ -19,8 +19,10 @@ router.post('/', function(req, res){
             res.status(201).send({
                 id: user._id,
                 username: user.username,
+                firstname: user.firstname,
+                lastname: user.lastname,
                 email: user.email,
-                accesstoken: token      
+                accesstoken: token
             });
         } else {
             res.status(401).send({
