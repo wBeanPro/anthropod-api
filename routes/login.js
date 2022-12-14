@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { generateAccessToken, generateRefreshToken } = require('../middleware/auth');
 
 router.post('/', function(req, res){
     const { username, password } = req.body;
@@ -12,9 +13,8 @@ router.post('/', function(req, res){
         // if (!user) return res.status(404).send({message: 'User not found!'})
 
         if (user && user.comparePassword(password)){
-            const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {
-                expiresIn: 86400
-            });
+            const token = generateAccessToken(user.id);
+            const refreshToken = generateRefreshToken(user.id);
 
             res.status(201).send({
                 id: user._id,
@@ -22,12 +22,14 @@ router.post('/', function(req, res){
                 firstname: user.firstname,
                 lastname: user.lastname,
                 email: user.email,
-                accesstoken: token
+                accesstoken: token,
+                refreshToken: refreshToken
             });
         } else {
             res.status(401).send({
                 message: 'Invalid password!',
-                accessToken: null
+                accessToken: null,
+                refreshToken: null
             });
         }
     });
