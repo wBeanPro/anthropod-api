@@ -17,6 +17,8 @@ router.post(
   ],
   songController.create_song
 );
+
+router.post("/like_song", [verifyToken], songController.update_like_status);
 router.put(
   "/:id/edit_song",
   [verifyToken, Upload_image_or_audio.single("song")],
