@@ -5,7 +5,20 @@ const { uploadFile } = require("../utils/util.js");
 
 exports.get_all_songs = (req, res, next) => {
   try {
-    Song.find({})
+    Song.find(
+      {},
+      {
+        title: 1,
+        likes: 1,
+        genre: 1,
+        fileUrl: 1,
+        coverUrl: 1,
+        user: 1,
+        releaseDate: 1,
+        createdOn: 1,
+      }
+    )
+      .populate("likes")
       .populate("user")
       .populate("genre")
       .exec((err, songs) => {
@@ -17,6 +30,23 @@ exports.get_all_songs = (req, res, next) => {
   } catch (error) {
     const err = new Error(error);
     res.status(500).send({ isSuccess: false, message: err.message });
+  }
+};
+
+exports.update_like_status = (req, res, next) => {
+  try {
+    console.log("SONG liKED", req.body.id);
+
+    Song.findByIdAndUpdate(req.body.id, {
+      $push: { likes: [req.userId] },
+    }).exec((err, song) => {
+      if (err)
+        return res.status(403).send({ isSuccess: false, message: err.message });
+      return res.send({ isSuccess: true, likes: song.likes });
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(403).send({ isSuccess: false, message: err.message });
   }
 };
 
@@ -103,6 +133,7 @@ exports.create_song = async (req, res, next) => {
     let newSong = new Song({
       _id: new mongoose.Types.ObjectId().toHexString(),
       title: req.body.title,
+      likes: [],
       fileUrl: publicSongFileUrl,
       coverUrl: publicCoverUrl,
       genre: req.body.genre,
