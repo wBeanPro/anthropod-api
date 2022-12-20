@@ -36,13 +36,28 @@ exports.get_all_songs = (req, res, next) => {
 exports.update_like_status = (req, res, next) => {
   try {
     console.log("SONG liKED", req.body.id);
+    Song.findById(req.body.id).exec((err, song) => {
+      const checkArr = song.likes.filter((userId) => {
+        if (userId.toString() === req.userId) {
+          return true;
+        }
+        return false;
+      });
 
-    Song.findByIdAndUpdate(req.body.id, {
-      $push: { likes: [req.userId] },
-    }).exec((err, song) => {
-      if (err)
-        return res.status(403).send({ isSuccess: false, message: err.message });
-      return res.send({ isSuccess: true, likes: song.likes });
+      if (checkArr.length > 0) {
+        console.log("already liked");
+        return res.send({ isSuccess: false, message: "liked" });
+      }
+
+      Song.findByIdAndUpdate(req.body.id, {
+        $push: { likes: [req.userId] },
+      }).exec((err, song) => {
+        if (err)
+          return res
+            .status(403)
+            .send({ isSuccess: false, message: err.message });
+        return res.send({ isSuccess: true, likes: song.likes });
+      });
     });
   } catch (err) {
     console.log(err);
