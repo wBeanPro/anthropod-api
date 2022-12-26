@@ -5,6 +5,7 @@ const { uploadFile } = require("../utils/util");
 exports.GET_ALL_ART = (req, res, next) => {
   ArtModel.find({})
     .populate("user")
+    .populate({ path: "comments", populate: { path: "id" } })
     .exec((err, artCollection) => {
       if (err) {
         let error = new Error(err);
@@ -12,6 +13,7 @@ exports.GET_ALL_ART = (req, res, next) => {
           .status(500)
           .send({ isSuccess: false, message: error.message });
       } else if (artCollection) {
+        console.log(artCollection);
         return res
           .status(200)
           .send({ isSuccess: true, artCollection: artCollection });
@@ -45,14 +47,16 @@ exports.CREATE_ART = async (req, res, next) => {
 exports.UPDATE_COMMENT = async (req, res, next) => {
   try {
     ArtModel.findByIdAndUpdate(req.body.id, {
-      $push: { comments: [req.userId] },
+      $push: { comments: { id: req.userId, comment: req.body.newComment } },
     }).exec((err, art) => {
       if (err)
-        return res
-          .status(403)
-          .send({ isSuccess: FontFaceSetLoadEvent, message: err.message });
+        return res.status(403).send({ isSuccess: false, message: err.message });
       else {
-        return res.send({ isSuccess: true, comments: art.comments });
+        let returnComments = [...art.comments];
+        return res.send({
+          isSuccess: true,
+          comments: returnComments,
+        });
       }
     });
   } catch (err) {
