@@ -5,6 +5,7 @@ const { uploadFile } = require("../utils/util");
 exports.GET_ALL_ART = (req, res, next) => {
   ArtModel.find({})
     .populate("user")
+    .populate({ path: "comments", populate: { path: "id" } })
     .exec((err, artCollection) => {
       if (err) {
         let error = new Error(err);
@@ -12,6 +13,7 @@ exports.GET_ALL_ART = (req, res, next) => {
           .status(500)
           .send({ isSuccess: false, message: error.message });
       } else if (artCollection) {
+        console.log(artCollection);
         return res
           .status(200)
           .send({ isSuccess: true, artCollection: artCollection });
@@ -42,6 +44,61 @@ exports.CREATE_ART = async (req, res, next) => {
   }
 };
 
+exports.UPDATE_COMMENT = async (req, res, next) => {
+  try {
+    ArtModel.findByIdAndUpdate(req.body.id, {
+      $push: { comments: { id: req.userId, comment: req.body.newComment } },
+    }).exec((err, art) => {
+      if (err)
+        return res.status(403).send({ isSuccess: false, message: err.message });
+      else {
+        let returnComments = [...art.comments];
+        return res.send({
+          isSuccess: true,
+          comments: returnComments,
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(403).send({ isSuccess: false, message: err.message });
+  }
+};
+
+exports.LIKE_ART = async (req, res, next) => {
+  try {
+    console.log("SONG liKED", req.body.id);
+    ArtModel.findById(req.body.id).exec((err, art) => {
+      const checkArr = art.likes.filter((userId) => {
+        if (userId.toString() === req.userId) {
+          return true;
+        }
+        return false;
+      });
+
+      if (checkArr.length > 0) {
+        console.log("already liked");
+        return res.send({ isSuccess: false, message: "liked" });
+      }
+
+      ArtModel.findByIdAndUpdate(req.body.id, {
+        $push: { likes: [req.userId] },
+      }).exec((err, art) => {
+        if (err)
+          return res
+            .status(403)
+            .send({ isSuccess: false, message: err.message });
+        else {
+          return res.send({ isSuccess: true, likes: art.likes });
+        }
+      });
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(403).send({ isSuccess: false, message: err.message });
+  }
+};
+
 exports.UPDATE_ART = async (req, res, next) => {
   const { id } = req.params;
   const { name, description } = req.body;
@@ -63,12 +120,10 @@ exports.UPDATE_ART = async (req, res, next) => {
       if (err)
         return res.status(500).send({ isSuccess: false, message: err.message });
       else if (updatedItem) {
-        return res
-          .status(200)
-          .send({
-            isSuccess: true,
-            message: `${updatedItem.name} has succesfully updated!`,
-          });
+        return res.status(200).send({
+          isSuccess: true,
+          message: `${updatedItem.name} has succesfully updated!`,
+        });
       }
     }
   );
