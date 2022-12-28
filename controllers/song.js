@@ -24,7 +24,6 @@ exports.get_all_songs = (req, res, next) => {
       .exec((err, songs) => {
         if (err || !songs)
           res.status(403).send({ isSuccess: false, message: err.message });
-        console.log(songs);
         res.status(200).send({ isSuccess: true, songs: songs });
       });
   } catch (error) {
@@ -132,17 +131,34 @@ exports.get_songs_by_user_id = (req, res, next) => {
   }
 };
 
+exports.remove_song = async (req, res, next) => {
+  try {
+    console.log(req.body.id, req.params);
+    Song.remove({ _id: req.params.id }).exec((err, result) => {
+      console.log(result);
+      if (err) {
+        return res.status(403).send({ isSuccess: false, message: err.message });
+      } else {
+        return res.send({ isSuccess: true, message: "success" });
+      }
+    });
+  } catch (err) {}
+};
+
 exports.create_song = async (req, res, next) => {
   // should create song object and saved to database.
   try {
-    const userId = req.userId;
-    const CoverUrl = req.files["cover"][0];
+    let CoverUrl = "";
+    let publicCoverUrl = "";
+    if (req.files["cover"]) {
+      CoverUrl = req.files["cover"][0];
+      publicCoverUrl = await uploadFile(CoverUrl);
+    }
     const SongFileUrl = req.files["song"][0];
 
     if (!Array.isArray(req.body.genre)) {
       req.body.genre = [req.body.genre];
     }
-    let publicCoverUrl = await uploadFile(CoverUrl);
     let publicSongFileUrl = await uploadFile(SongFileUrl);
 
     let newSong = new Song({
@@ -162,6 +178,7 @@ exports.create_song = async (req, res, next) => {
     });
   } catch (error) {
     const err = new Error(error);
+    console.log(error);
     res.status(500).send({ isSuccess: false, message: err.message });
   }
 };
