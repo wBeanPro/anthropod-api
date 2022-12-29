@@ -5,6 +5,24 @@ const { UploadImage } = require("../middleware/file_middleware.js");
 
 router.get("/:userId", auth.verifyToken, User_Controller.getUser);
 
+router.post(
+  "/disclaimed",
+  [auth.verifyToken],
+  User_Controller.updateDisclaimed
+);
+
+router.post(
+  "/decrease-balance",
+  [auth.verifyToken],
+  User_Controller.decreaseBalance
+);
+
+router.post(
+  "/increase-balance",
+  [auth.verifyToken],
+  User_Controller.increaseBalance
+);
+
 router.put(
   "/:id/edit",
   [auth.verifyToken, UploadImage.single("avatar")],
