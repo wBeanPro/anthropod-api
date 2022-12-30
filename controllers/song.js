@@ -14,6 +14,7 @@ exports.get_all_songs = (req, res, next) => {
         fileUrl: 1,
         coverUrl: 1,
         user: 1,
+        priceByToken: 1,
         releaseDate: 1,
         createdOn: 1,
       }
@@ -150,6 +151,8 @@ exports.create_song = async (req, res, next) => {
   try {
     let CoverUrl = "";
     let publicCoverUrl = "";
+    console.log(req.body.priceByToken);
+
     if (req.files["cover"]) {
       CoverUrl = req.files["cover"][0];
       publicCoverUrl = await uploadFile(CoverUrl);
@@ -169,6 +172,7 @@ exports.create_song = async (req, res, next) => {
       coverUrl: publicCoverUrl,
       genre: req.body.genre,
       user: req.userId,
+      priceByToken: Number(req.body.priceByToken),
     });
 
     await newSong.save();
