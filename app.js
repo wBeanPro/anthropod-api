@@ -34,6 +34,7 @@ const allowedOrigins = [
   "http://localhost:4200",
   "https://anthropod-staging.herokuapp.com",
   "https://anthropod-r7lsnsohxq-uc.a.run.app",
+  "https://anthropodnft.io"
 ];
 const corsOptions = {
   origin: (origin, cb) => {
