@@ -7,6 +7,12 @@ const VideoSchema = new Schema({
   title: { type: String, required: true, max: 500 },
   videoUrl: { type: String, required: true },
   likes: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  comments: [
+    {
+      id: { type: Schema.Types.ObjectId, ref: "User" },
+      comment: { type: String },
+    },
+  ],
   thumbnail: {
     type: String,
     default:
