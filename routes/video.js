@@ -26,5 +26,6 @@ router.put(
 router.get("/all_videos", VideoController.GET_ALL_VIDEOS);
 router.get("/:id", VideoController.GET_VIDEO_BY_ID);
 router.delete("/:id", VideoController.DELETE_VIDEO);
+router.post("/add_comment", [verifyToken], VideoController.UPDATE_COMMENT);
 
 module.exports = router;

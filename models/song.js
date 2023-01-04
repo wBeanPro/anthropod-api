@@ -8,6 +8,7 @@ const SongSchema = new Schema({
   title: { type: String, required: true },
   genre: [{ type: mongoose.Types.ObjectId, ref: "Genres" }],
   likes: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  priceByToken: { type: Number, required: false },
   fileUrl: { type: String, required: true },
   coverUrl: { type: String, required: true },
   user: { type: mongoose.Types.ObjectId, required: true, ref: "User" },

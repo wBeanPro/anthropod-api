@@ -6,15 +6,39 @@ const multer = require("multer");
 exports.GET_ALL_VIDEOS = (req, res, next) => {
   Video.find({})
     .populate("user")
+    .populate({ path: "comments", populate: { path: "id" } })
     .exec((err, videos) => {
       if (err)
         res
           .status(500)
           .send({ isSuccess: false, message: "Something went wrong" });
       if (videos) {
+        console.log(videos);
         res.status(200).send({ isSuccess: true, videos: videos });
       }
     });
+};
+
+exports.UPDATE_COMMENT = async (req, res, next) => {
+  try {
+    console.log("here", req.body);
+    Video.findByIdAndUpdate(req.body.id, {
+      $push: { comments: { id: req.userId, comment: req.body.comment } },
+    }).exec((err, art) => {
+      if (err)
+        return res.status(403).send({ isSuccess: false, message: err.message });
+      else {
+        let returnComments = [...art.comments];
+        return res.send({
+          isSuccess: true,
+          comments: returnComments,
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(403).send({ isSuccess: false, message: err.message });
+  }
 };
 
 exports.LIKE_VIDEO = (req, res, next) => {
@@ -119,6 +143,7 @@ exports.GET_VIDEO_BY_ID = (req, res, next) => {
   const { id } = req.params;
   Video.findById({ _id: id })
     .populate("user")
+    .populate({ path: "comments", populate: { path: "id" } })
     .exec((err, video) => {
       if (err) {
         let error = new Error(err);
