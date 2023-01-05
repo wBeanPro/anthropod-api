@@ -1,7 +1,8 @@
 const Stripe = require("stripe");
-const stripeAPIKey = "";
-
-const stripe = Stripe(stripeAPIKey);
+const stripeAPIKey =
+  "sk_test_51Lucw8I9rxkJyrxmw5SMD1sqdKITAPS3usQ6hn18kDGA5Ii3ywZ7DdANu7VINhjv2sGSdjLG3MgWjImzCtxdwqht00RGxTLoxu";
+require("dotenv").config();
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 exports.create_payment = async (req, res, next) => {
   const { amount, name } = req.body;

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { uploadFile } = require("../utils/util");
 const Video = require("../models/video");
 const multer = require("multer");
+const video = require("../models/video");
 
 exports.GET_ALL_VIDEOS = (req, res, next) => {
   Video.find({})
@@ -17,6 +18,19 @@ exports.GET_ALL_VIDEOS = (req, res, next) => {
         res.status(200).send({ isSuccess: true, videos: videos });
       }
     });
+};
+
+exports.video_played = (req, res, next) => {
+  try {
+    Video.findByIdAndUpdate(req.body.id, {
+      playedOn: new Date(),
+    }).exec((err, song) => {
+      if (song) res.status(200).send({ isSuccess: true, video: video });
+      if (err) res.status(403).send({ isSuccess: false, err });
+    });
+  } catch (err) {
+    if (err) res.status(404).send({ isSuccess: false, err });
+  }
 };
 
 exports.UPDATE_COMMENT = async (req, res, next) => {

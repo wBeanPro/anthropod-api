@@ -6,6 +6,7 @@ const { verifyToken } = require("../middleware/auth.js");
 router.get("/", songController.get_all_songs);
 router.get("/:id", songController.get_song_by_id);
 router.get("/user/:id", songController.get_songs_by_user_id);
+router.post("/played", songController.song_played);
 router.post(
   "/",
   [
