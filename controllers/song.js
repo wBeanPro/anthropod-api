@@ -17,6 +17,7 @@ exports.get_all_songs = (req, res, next) => {
         priceByToken: 1,
         releaseDate: 1,
         createdOn: 1,
+        playedOn: 1,
       }
     )
       .populate("likes")
@@ -81,6 +82,19 @@ exports.get_song_by_id = (req, res, next) => {
   } catch (error) {
     const err = new Error(error);
     res.status(500).send({ isSuccess: false, message: err.message });
+  }
+};
+
+exports.song_played = async (req, res, next) => {
+  try {
+    Song.findByIdAndUpdate(req.body.id, {
+      playedOn: new Date(),
+    }).exec((err, song) => {
+      if (song) res.status(200).send({ isSuccess: true, song: song });
+      if (err) res.status(403).send({ isSuccess: false, err });
+    });
+  } catch (err) {
+    if (err) res.status(404).send({ isSuccess: false, err });
   }
 };
 

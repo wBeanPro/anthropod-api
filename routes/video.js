@@ -14,6 +14,8 @@ router.post(
   ],
   VideoController.CREATE_VIDEO
 );
+
+router.post("/played", VideoController.video_played);
 router.post("/like_video", [verifyToken], VideoController.LIKE_VIDEO);
 router.put(
   "/:id/edit",

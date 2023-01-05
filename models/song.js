@@ -14,6 +14,7 @@ const SongSchema = new Schema({
   user: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
   releaseDate: { type: Date, default: Date.now },
   createdOn: { type: Date, default: Date.now },
+  playedOn: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Songs", SongSchema);
