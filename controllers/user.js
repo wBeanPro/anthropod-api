@@ -1,5 +1,6 @@
 const User = require("../models/user.js");
 const helper = require("../utils/util.js");
+const bcrypt = require("bcrypt");
 const { UploadImage } = require("../middleware/file_middleware.js");
 
 exports.getUser = (req, res, next) => {
@@ -20,6 +21,35 @@ exports.getUser = (req, res, next) => {
       profile_photo: user.profile_photo || null,
     });
   });
+};
+
+exports.resetPassword = (req, res, next) => {
+  console.log(req.body);
+  try {
+    if (req.body.newPass != req.body.confirmPass) {
+      return res.send({ isSuccess: false, message: "not confirm" });
+    }
+    User.findById(req.userId, function (err, user) {
+      if (err) return res.status(403).send({ isSuccess: false });
+      if (user && user.comparePassword(req.body.oldPass)) {
+        User.findByIdAndUpdate(
+          req.userId,
+          { password: bcrypt.hashSync(req.body.newPass, 10) },
+          {
+            new: true,
+            upsert: true,
+          },
+          (err, user) => {
+            if (user) return res.send({ isSuccess: true });
+          }
+        );
+      } else {
+        return res.send({ isSuccess: false, message: "not match" });
+      }
+    });
+  } catch (err) {
+    return res.status(403).send({ isSucces: false });
+  }
 };
 
 exports.increaseBalance = async (req, res, next) => {

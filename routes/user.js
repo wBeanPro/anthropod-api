@@ -12,6 +12,12 @@ router.post(
 );
 
 router.post(
+  "/reset_password",
+  [auth.verifyToken],
+  User_Controller.resetPassword
+);
+
+router.post(
   "/decrease-balance",
   [auth.verifyToken],
   User_Controller.decreaseBalance
