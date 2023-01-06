@@ -92,7 +92,7 @@ exports.CREATE_VIDEO = async (req, res, next) => {
   const userId = req.userId;
   const video = req.files["video"][0];
   const thumbnail = req.files["thumbnail"][0];
-  const { title } = req.body;
+  const { title, priceByToken } = req.body;
   try {
     let videoUrl = await uploadFile(video);
     let thumbnailUrl = await uploadFile(thumbnail);
@@ -104,6 +104,7 @@ exports.CREATE_VIDEO = async (req, res, next) => {
       title: title,
       videoUrl: videoUrl,
       thumbnail: thumbnailUrl,
+      priceByToken: priceByToken,
       likes: [],
       user: userId,
     });

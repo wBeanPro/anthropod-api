@@ -23,7 +23,7 @@ exports.GET_ALL_ART = (req, res, next) => {
 
 exports.CREATE_ART = async (req, res, next) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, priceByToken } = req.body;
     const image = req.file;
     const imageUrl = await uploadFile(image);
     const newArt = new ArtModel({
@@ -32,6 +32,7 @@ exports.CREATE_ART = async (req, res, next) => {
       description: description,
       image: imageUrl,
       user: req.userId,
+      priceByToken: priceByToken,
     });
 
     await newArt.save();
