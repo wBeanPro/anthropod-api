@@ -21,6 +21,7 @@ const VideoSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User" },
   createdOn: { type: Date, default: Date.now() },
   playedOn: { type: Date, default: Date.now },
+  priceByToken: { type: Number, required: false },
 });
 
 module.exports = mongoose.model("Video", VideoSchema);

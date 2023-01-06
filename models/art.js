@@ -16,6 +16,7 @@ const ArtSchema = new Schema({
   image: { type: String, required: true },
   user: { type: Schema.Types.ObjectId, ref: "User" },
   createdOn: { type: Date, default: Date.now() },
+  priceByToken: { type: Number, required: false },
 });
 
 module.exports = mongoose.model("Art", ArtSchema);
