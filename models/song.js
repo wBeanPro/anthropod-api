@@ -15,6 +15,7 @@ const SongSchema = new Schema({
   releaseDate: { type: Date, default: Date.now },
   createdOn: { type: Date, default: Date.now },
   playedOn: { type: Date, default: Date.now },
+  playCount: { type: Number, required: false },
 });
 
 module.exports = mongoose.model("Songs", SongSchema);
