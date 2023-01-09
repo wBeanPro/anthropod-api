@@ -22,6 +22,7 @@ const VideoSchema = new Schema({
   createdOn: { type: Date, default: Date.now() },
   playedOn: { type: Date, default: Date.now },
   priceByToken: { type: Number, required: false },
+  playCount: { type: Number, required: false },
 });
 
 module.exports = mongoose.model("Video", VideoSchema);

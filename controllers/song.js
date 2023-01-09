@@ -18,6 +18,7 @@ exports.get_all_songs = (req, res, next) => {
         releaseDate: 1,
         createdOn: 1,
         playedOn: 1,
+        playCount: 1,
       }
     )
       .populate("likes")
@@ -89,8 +90,12 @@ exports.song_played = async (req, res, next) => {
   try {
     Song.findByIdAndUpdate(req.body.id, {
       playedOn: new Date(),
+      $inc: { playCount: 1 },
     }).exec((err, song) => {
-      if (song) res.status(200).send({ isSuccess: true, song: song });
+      if (song) {
+        console.log(song.playCount);
+        res.status(200).send({ isSuccess: true, song: song });
+      }
       if (err) res.status(403).send({ isSuccess: false, err });
     });
   } catch (err) {
