@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { UploadAudio } = require("../middleware/file_middleware.js");
 const Song = require("../models/song.js");
+const User = require("../models/user.js");
 const { uploadFile } = require("../utils/util.js");
 
 exports.get_all_songs = (req, res, next) => {
@@ -32,6 +33,45 @@ exports.get_all_songs = (req, res, next) => {
   } catch (error) {
     const err = new Error(error);
     res.status(500).send({ isSuccess: false, message: err.message });
+  }
+};
+
+exports.buy_nft = async (req, res) => {
+  try {
+    const buyerId = req.userId;
+    const nftSongId = req.body.id;
+    const song = await Song.findById(nftSongId);
+    const buyer = await User.findById(buyerId);
+    const sellerId = song.user;
+    const seller = await User.findById(sellerId);
+    console.log(sellerId, buyerId);
+
+    if (buyer.balance < song.priceByToken) {
+      return res
+        .status(405)
+        .send({ isSuccess: false, message: "insufficient" });
+    }
+
+    const decreasedAmount = buyer.balance - song.priceByToken;
+    const newBuyer = await User.findByIdAndUpdate(buyerId, {
+      balance: decreasedAmount,
+    });
+    const decreasedBuyer = { ...newBuyer, balance: decreasedAmount };
+    console.log("decreased", newBuyer.balance, decreasedAmount);
+
+    await User.findByIdAndUpdate(sellerId, {
+      balance: seller.balance + song.priceByToken,
+    });
+
+    await Song.findByIdAndUpdate(
+      nftSongId,
+      { user: buyerId },
+      { new: true, upsert: true }
+    );
+
+    return res.send({ isSuccess: true, user: decreasedBuyer });
+  } catch (err) {
+    res.status(403).send({ isSuccess: false, message: err.message });
   }
 };
 

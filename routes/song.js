@@ -20,7 +20,7 @@ router.post(
 );
 
 router.delete("/remove/:id", [verifyToken], songController.remove_song);
-
+router.post("/buy", [verifyToken], songController.buy_nft);
 router.post("/like_song", [verifyToken], songController.update_like_status);
 router.put(
   "/:id/edit_song",

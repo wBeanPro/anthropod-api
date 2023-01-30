@@ -1,5 +1,7 @@
 const User = require("../models/user.js");
+const History = require("../models/history");
 const helper = require("../utils/util.js");
+const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 const { UploadImage } = require("../middleware/file_middleware.js");
 
@@ -52,6 +54,20 @@ exports.resetPassword = (req, res, next) => {
   }
 };
 
+exports.getHistory = async (req, res) => {
+  try {
+    History.find({ user: req.userId }).exec((err, histories) => {
+      if (err) {
+        return res.status(405).send({ isSucces: false, message: err.message });
+      }
+
+      return res.send({ isSuccess: true, histories: histories });
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.increaseBalance = async (req, res, next) => {
   try {
     User.findById(req.body.id).exec((err, user) => {
@@ -64,6 +80,15 @@ exports.increaseBalance = async (req, res, next) => {
         (err, user) => {
           console.log(user.balance);
           const returnvalue = user.balance + req.body.amount;
+          let newHistory = new History({
+            _id: new mongoose.Types.ObjectId().toHexString(),
+            user: req.userId,
+            activity: "Buy tokens",
+            description: "Bought successfully",
+            from: "Credit Card",
+            amount: req.body.amount,
+          });
+          newHistory.save();
           if (err)
             return res
               .status(401)
