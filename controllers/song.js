@@ -144,24 +144,38 @@ exports.song_played = async (req, res, next) => {
 };
 
 exports.update_song = async (req, res, next) => {
-  const { id } = req.params;
-  const song = req.file;
   try {
-    const fileUrl = await uploadFile(song);
-    Song.findByIdAndUpdate(
-      id,
-      {
-        title: req.body.title,
-        fileUrl: fileUrl,
-      },
-      {
-        new: true,
-        upsert: true,
-      },
-      (err, song) => {
-        if (song) res.status(200).send({ isSuccess: true, updated_song: song });
+    Song.findById(req.body.id, function (err, song) {
+      if (err) return res.status(403).send({ isSuccess: false });
+      if (song) {
+        Song.findByIdAndUpdate(
+          req.body.id,
+          {
+            title: req.body.title,
+            priceByToken: req.body.priceByToken,
+          },
+          () => {
+            return res.send({ isSuccess: true });
+          }
+        );
       }
-    );
+    });
+
+    // const fileUrl = await uploadFile(song);
+    // Song.findByIdAndUpdate(
+    //   id,
+    //   {
+    //     title: req.body.title,
+    //     fileUrl: fileUrl,
+    //   },
+    //   {
+    //     new: true,
+    //     upsert: true,
+    //   },
+    //   (err, song) => {
+    //     if (song) res.status(200).send({ isSuccess: true, updated_song: song });
+    //   }
+    // );
   } catch (error) {
     const err = new Error(error);
     res.status(500).send({ isSuccess: false, message: err.message });
