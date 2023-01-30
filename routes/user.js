@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const auth = require("../middleware/auth.js");
 const User_Controller = require("../controllers/user.js");
+const Purchase_Controller = require("../controllers/purchaseAd");
 const { UploadImage } = require("../middleware/file_middleware.js");
 
 router.get("/:userId", auth.verifyToken, User_Controller.getUser);
@@ -28,6 +29,20 @@ router.post(
   [auth.verifyToken],
   User_Controller.increaseBalance
 );
+
+router.get(
+  "/purchase/all",
+  [auth.verifyToken],
+  Purchase_Controller.GET_ALL_PURCHASE
+);
+
+router.get(
+  "/insert/purchase",
+  [auth.verifyToken],
+  Purchase_Controller.CREATE_PURCHASE
+);
+
+router.get("/user/get-history", [auth.verifyToken], User_Controller.getHistory);
 
 router.put(
   "/:id/edit",
