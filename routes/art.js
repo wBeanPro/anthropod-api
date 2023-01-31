@@ -14,7 +14,9 @@ router.put(
   [verifyToken, UploadImage.single("image")],
   ArtController.UPDATE_ART
 );
+router.get("/user/:id", ArtController.GET_ARTS_BY_USER);
 router.delete("/:id", [verifyToken], ArtController.DELETE_ART);
+router.post("/update", [verifyToken], ArtController.UPDATE_ART);
 router.post("/like_art", [verifyToken], ArtController.LIKE_ART);
 router.post("/add_comment", [verifyToken], ArtController.UPDATE_COMMENT);
 

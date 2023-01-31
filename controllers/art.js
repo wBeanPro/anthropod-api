@@ -101,33 +101,26 @@ exports.LIKE_ART = async (req, res, next) => {
 };
 
 exports.UPDATE_ART = async (req, res, next) => {
-  const { id } = req.params;
-  const { name, description } = req.body;
-  const image = req.file;
-  const updatedImage = await uploadFile(image);
-
-  ArtModel.findByIdAndUpdate(
-    { _id: id },
-    {
-      name: name,
-      description: description,
-      image: updatedImage,
-    },
-    {
-      new: true,
-      upsert: true,
-    },
-    (err, updatedItem) => {
-      if (err)
-        return res.status(500).send({ isSuccess: false, message: err.message });
-      else if (updatedItem) {
-        return res.status(200).send({
-          isSuccess: true,
-          message: `${updatedItem.name} has succesfully updated!`,
-        });
+  try {
+    ArtModel.findById(req.body.id, function (err, art) {
+      if (err) return res.status(403).send({ isSuccess: false });
+      if (art) {
+        ArtModel.findByIdAndUpdate(
+          req.body.id,
+          {
+            name: req.body.name,
+            priceByToken: req.body.priceByToken,
+          },
+          () => {
+            return res.send({ isSuccess: true });
+          }
+        );
       }
-    }
-  );
+    });
+  } catch (error) {
+    const err = new Error(error);
+    res.status(500).send({ isSuccess: false, message: err.message });
+  }
 };
 
 exports.GET_ART_BY_ID = (req, res, next) => {
@@ -146,6 +139,27 @@ exports.GET_ART_BY_ID = (req, res, next) => {
           .send({ isSuccess: false, message: "RESOURCE NOT FOUND!" });
       }
     });
+};
+
+exports.GET_ARTS_BY_USER = (req, res, next) => {
+  const { id } = req.params;
+  try {
+    ArtModel.find({})
+      .populate("user")
+      .where("user")
+      .equals(id)
+      .exec((err, arts) => {
+        if (!arts)
+          return res
+            .status(403)
+            .send({ isSuccess: false, message: "Resource does not exist!" });
+        else if (arts)
+          return res.status(200).send({ isSuccess: true, arts: arts });
+      });
+  } catch (error) {
+    const err = new Error(error);
+    return res.status(500).send({ isSuccess: false, message: err.message });
+  }
 };
 
 exports.DELETE_ART = (req, res, next) => {
