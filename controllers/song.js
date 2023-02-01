@@ -46,21 +46,21 @@ exports.buy_nft = async (req, res) => {
     const seller = await User.findById(sellerId);
     console.log(sellerId, buyerId);
 
-    if (buyer.balance < song.priceByToken) {
+    if (buyer.withdraw_balance < song.priceByToken) {
       return res
         .status(405)
         .send({ isSuccess: false, message: "insufficient" });
     }
 
-    const decreasedAmount = buyer.balance - song.priceByToken;
+    const decreasedAmount = buyer.withdraw_balance - song.priceByToken;
     const newBuyer = await User.findByIdAndUpdate(buyerId, {
-      balance: decreasedAmount,
+      withdraw_balance: decreasedAmount,
     });
-    const decreasedBuyer = { ...newBuyer, balance: decreasedAmount };
-    console.log("decreased", newBuyer.balance, decreasedAmount);
+    const decreasedBuyer = { ...newBuyer, withdraw_balance: decreasedAmount };
+    console.log("decreased", newBuyer.withdraw_balance, decreasedAmount);
 
     await User.findByIdAndUpdate(sellerId, {
-      balance: seller.balance + song.priceByToken,
+      withdraw_balance: seller.withdraw_balance + song.priceByToken,
     });
 
     await Song.findByIdAndUpdate(

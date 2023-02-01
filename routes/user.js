@@ -30,6 +30,18 @@ router.post(
   User_Controller.increaseBalance
 );
 
+router.post(
+  "/decrease-withdrawbalance",
+  [auth.verifyToken],
+  User_Controller.decreaseWithdrawBalance
+);
+
+router.post(
+  "/increase-withdrawbalance",
+  [auth.verifyToken],
+  User_Controller.increaseWithdrawBalance
+);
+
 router.get(
   "/purchase/all",
   [auth.verifyToken],
