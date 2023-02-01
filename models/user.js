@@ -9,6 +9,7 @@ const UserSchema = new Schema({
   vip: { type: Boolean, default: false },
   disclaimed: { type: Boolean, default: false },
   balance: { type: Number, default: 500 },
+  withdraw_balance: { type: Number, default: 0 },
   password: { type: String, required: true },
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },

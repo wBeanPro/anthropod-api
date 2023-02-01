@@ -151,6 +151,89 @@ exports.decreaseBalance = async (req, res, next) => {
   }
 };
 
+exports.increaseWithdrawBalance = async (req, res, next) => {
+  try {
+    User.findById(req.body.id).exec((err, user) => {
+      const withdraw_balance = user.withdraw_balance;
+      console.log("Current Balance", withdraw_balance);
+      User.findByIdAndUpdate(
+        req.body.id,
+        { withdraw_balance: withdraw_balance + req.body.amount },
+        { upsert: true },
+        (err, user) => {
+          console.log(user.withdraw_balance);
+          const returnvalue = user.withdraw_balance + req.body.amount;
+          let newHistory = new History({
+            _id: new mongoose.Types.ObjectId().toHexString(),
+            user: req.userId,
+            activity: "Buy tokens",
+            description: "Bought successfully",
+            from: "Credit Card",
+            amount: req.body.amount,
+          });
+          newHistory.save();
+          if (err)
+            return res
+              .status(401)
+              .send({ isSucces: false, message: err.message });
+
+          if (!user)
+            return res
+              .status(403)
+              .send({ isSuccess: true, message: "User not found!" });
+
+          return res.status(200).send({
+            isSuccess: true,
+            withdraw_balance: returnvalue,
+          });
+        }
+      );
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(403)
+      .send({ isSucces: false, message: "unexpected error!" });
+  }
+};
+
+exports.decreaseWithdrawBalance = async (req, res, next) => {
+  try {
+    User.findById(req.body.id).exec((err, user) => {
+      const withdraw_balance = user.withdraw_balance;
+      console.log("Current Balance", withdraw_balance);
+      User.findByIdAndUpdate(
+        req.body.id,
+        { withdraw_balance: withdraw_balance - 50 },
+        { upsert: true },
+        (err, user) => {
+          console.log(user.withdraw_balance);
+          const returnvalue = user.withdraw_balance - 50;
+          if (err)
+            return res
+              .status(401)
+              .send({ isSucces: false, message: err.message });
+
+          if (!user)
+            return res
+              .status(403)
+              .send({ isSuccess: true, message: "User not found!" });
+
+          return res.status(200).send({
+            isSuccess: true,
+            withdraw_balance: returnvalue,
+          });
+        }
+      );
+    });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(403)
+      .send({ isSucces: false, message: "unexpected error!" });
+  }
+};
+
 exports.updateDisclaimed = async (req, res, next) => {
   const { id } = req.body;
   console.log(id);

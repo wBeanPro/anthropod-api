@@ -123,35 +123,27 @@ exports.CREATE_VIDEO = async (req, res, next) => {
 };
 
 exports.UPDATE_VIDEO = async (req, res, next) => {
-  const { id } = req.params;
-  const { title } = req.body;
-  const videoFile = req.files["video"][0];
-  const thumbnailFile = req.files["thumbnail"][0];
-  let updatedVideoUrl = await uploadFile(videoFile);
-  let updatedThumbnail = await uploadFile(thumbnailFile);
+  try {
+    Video.findById(req.body.id, function (err, video) {
+      if (err) return res.status(403).send({ isSuccess: false });
+      if (video) {
+        Video.findByIdAndUpdate(
+          req.body.id,
+          {
+            title: req.body.title,
+            priceByToken: req.body.priceByToken,
+          },
+          () => {
+            return res.send({ isSuccess: true });
+          }
+        );
+      }
+    });
+  } catch (error) {
+    const err = new Error(error);
+    res.status(500).send({ isSuccess: false, message: err.message });
+  }
 
-  Video.findByIdAndUpdate(
-    { _id: id },
-    {
-      title: title,
-      videoUrl: updatedVideoUrl,
-      thumbnail: updatedThumbnail,
-    },
-    { new: true, upsert: true },
-    (err, updatedVideo) => {
-      if (err)
-        res.status(500).send({
-          isSuccess: false,
-          message: "Could not edit file! Please Try again.",
-        });
-      else if (updatedVideo)
-        res.status(200).send({ isSuccess: true, updatedVideo: updatedVideo });
-      else
-        return res
-          .status(404)
-          .send({ isSuccess: false, message: "resource does not exist!" });
-    }
-  );
 };
 
 exports.GET_VIDEO_BY_ID = (req, res, next) => {
@@ -173,6 +165,27 @@ exports.GET_VIDEO_BY_ID = (req, res, next) => {
         res.status(200).send({ isSuccess: true, video: video });
       }
     });
+};
+
+exports.GET_VIDEOS_BY_USER = (req, res, next) => {
+  const { id } = req.params;
+  try {
+    Video.find({})
+      .populate("user")
+      .where("user")
+      .equals(id)
+      .exec((err, videos) => {
+        if (!videos)
+          return res
+            .status(403)
+            .send({ isSuccess: false, message: "Resource does not exist!" });
+        else if (videos)
+          return res.status(200).send({ isSuccess: true, videos: videos });
+      });
+  } catch (error) {
+    const err = new Error(error);
+    return res.status(500).send({ isSuccess: false, message: err.message });
+  }
 };
 
 exports.DELETE_VIDEO = (req, res, next) => {
