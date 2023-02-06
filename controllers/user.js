@@ -19,6 +19,7 @@ exports.getUser = (req, res, next) => {
       lastname: user.lastname,
       disclaimed: user.disclaimed,
       balance: user.balance,
+      withdraw_balance: user.withdraw_balance,
       email: user.email,
       profile_photo: user.profile_photo || null,
     });
@@ -204,11 +205,11 @@ exports.decreaseWithdrawBalance = async (req, res, next) => {
       console.log("Current Balance", withdraw_balance);
       User.findByIdAndUpdate(
         req.body.id,
-        { withdraw_balance: withdraw_balance - 50 },
+        { withdraw_balance: withdraw_balance - req.body.amount },
         { upsert: true },
         (err, user) => {
           console.log(user.withdraw_balance);
-          const returnvalue = user.withdraw_balance - 50;
+          const returnvalue = user.withdraw_balance - req.body.amount;
           if (err)
             return res
               .status(401)
