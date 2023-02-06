@@ -22,6 +22,8 @@ router.post('/', function(req, res){
                 firstname: user.firstname,
                 lastname: user.lastname,
                 email: user.email,
+                balance: user.balance,
+                withdraw_balance: user.withdraw_balance,
                 accesstoken: token,
                 refreshToken: refreshToken
             });
