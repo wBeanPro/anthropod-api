@@ -30,7 +30,7 @@ exports.resetPassword = (req, res, next) => {
   console.log(req.body);
   try {
     if (req.body.newPass != req.body.confirmPass) {
-      return res.send({ isSuccess: false, message: "not confirm" });
+      return res.send({ isSuccess: false, message: "Not Confirmed" });
     }
     User.findById(req.userId, function (err, user) {
       if (err) return res.status(403).send({ isSuccess: false });
