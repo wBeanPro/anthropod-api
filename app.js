@@ -9,7 +9,11 @@ const bodyParser = require("body-parser");
 const routes = require("./routes/index.js");
 const { read } = require("fs");
 const app = express();
-const uri = `mongodb+srv://anthropoduser:${process.env.MONGO_PASSWORD}@cluster0.turudph.mongodb.net/anthropod?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://anthropoduser:${process.env.MONGO_PASSWORD}@cluster0.turudph.mongodb.net/anthropod?retryWrites=true&w=majority`;
+// const uri = "mongodb+srv://termnltech:termnltech6@cluster0.tln7r2b.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.MONGO_DB_URI;
+
+
 const gcp = require("./gcp/config.js");
 
 //mongodb database connection
