@@ -34,6 +34,7 @@ gcp.getBuckets().then((x) => console.log("Buckets are fetched"));
 //middleware
 
 // cors options
+// updating this for replit
 const allowedOrigins = [
   "http://localhost:4200",
   "https://anthropod-staging.herokuapp.com",
